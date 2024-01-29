@@ -198,7 +198,7 @@ function Home() {
     ["movies", "topRated"],
     getTopRatedMovies
   );
-  const { data: upcommingData, isLoading: isUpcommingDataLoading } = useQuery<IGetMoviesResult>(
+  const { data: upcoming, isLoading: isUpcomingLoading } = useQuery<IGetMoviesResult>(
     ["movies", "upcoming"],
     getUpcomingMovies
   );
@@ -210,11 +210,14 @@ function Home() {
     navigate("/");
   };
   const clickedMovie =
-    movieMatch?.params.movieId &&
-    data?.results.find((movie) => String(movie.id) === movieMatch.params.movieId);
+    (movieMatch?.params.movieId &&
+      data?.results.find((movie) => String(movie.id) === movieMatch.params.movieId)) ||
+    popData?.results.find((movie) => String(movie.id) === movieMatch?.params.movieId) ||
+    topData?.results.find((movie) => String(movie.id) === movieMatch?.params.movieId) ||
+    upcoming?.results.find((movie) => String(movie.id) === movieMatch?.params.movieId);
   return (
     <Wrapper>
-      {isLoading || isPopDataLoading || isTopDataLoading || isUpcommingDataLoading ? (
+      {isLoading || isPopDataLoading || isTopDataLoading || isUpcomingLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -276,7 +279,7 @@ function Home() {
           <SliderComponent data={data?.results ?? []} title="Playing Now" type="movie" />
           <SliderComponent data={popData?.results ?? []} title="Trending Now" type="movie" />
           <SliderComponent data={topData?.results ?? []} title="Top Rated" type="movie" />
-          <SliderComponent data={upcommingData?.results ?? []} title="Upcoming" type="movie" />
+          <SliderComponent data={upcoming?.results ?? []} title="Upcoming" type="movie" />
           <AnimatePresence>
             {movieMatch ? (
               <>
@@ -295,7 +298,7 @@ function Home() {
                           )}`,
                         }}
                       />
-                      <MovieTitle>{clickedMovie.title?.substring(0, 15) + "..."}</MovieTitle>
+                      <MovieTitle>{clickedMovie.title?.substring(0, 15)}</MovieTitle>
                       <MovieOverview>{clickedMovie.overview}</MovieOverview>
                     </>
                   )}
