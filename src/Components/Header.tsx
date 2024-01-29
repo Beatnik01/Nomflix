@@ -11,7 +11,6 @@ const Nav = styled(motion.nav)`
   position: fixed;
   width: 100%;
   top: 0;
-  font-size: 14px;
   padding: 20px 60px;
   color: white;
 `;
@@ -46,8 +45,10 @@ const Item = styled.li`
   display: flex;
   justify-content: center;
   flex-direction: column;
+  font-size: 20px;
   &:hover {
     color: ${(props) => props.theme.white.lighter};
+    opacity: 0.6;
   }
 `;
 
