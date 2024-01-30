@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import useWindowDimensions from "../useWindowDimension";
 import { makeImagePath } from "../utilities";
@@ -222,29 +222,31 @@ const GenreInfo: React.FC<GenreInfoProps> = ({ genreIds, genres }) => {
 function SliderComponent({ data, title, type }: ISliderProps) {
   const navigate = useNavigate();
   const [isHover, setIsHover] = useState(false);
-  const [leaving, setLeaving] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [index, setIndex] = useState(0);
   const width = useWindowDimensions();
-  const toggleLeaving = () => setLeaving((prev) => !prev);
   const handleMouseEnter = () => {
     setIsHover(true);
   };
   const handleMouseLeave = () => {
     setIsHover(false);
   };
-  const IncIndex = () => {
-    if (data) {
-      if (leaving) return;
-      setLeaving(true);
-      const totalMovies = data.length - 1;
+  const IncIndex = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (data && !isDisabled) {
+      const totalMovies = data.length;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
-      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+      setIsDisabled(true);
+      try {
+        setTimeout(() => {
+          setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+        }, 200);
+      } finally {
+        setIsDisabled(false);
+      }
     }
   };
   const DecIndex = () => {
     if (data) {
-      if (leaving) return;
-      setLeaving(true);
       const totalMovies = data.length;
       const maxIndex = Math.floor(totalMovies / offset);
       setIndex((prev) => (prev === maxIndex ? 0 : prev - 1));
@@ -270,35 +272,45 @@ function SliderComponent({ data, title, type }: ISliderProps) {
           />
         </svg>
       </SliderTitleBox>
-      <SliderLeft onClick={DecIndex} variants={enterVars} animate={isHover ? "hover" : ""}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="w-6 h-6"
+      <AnimatePresence initial={false}>
+        <SliderLeft
+          key={title + "left"}
+          onClick={DecIndex}
+          variants={enterVars}
+          animate={isHover ? "hover" : ""}
         >
-          <path
-            fillRule="evenodd"
-            d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </SliderLeft>
-      <SliderRight onClick={IncIndex} variants={enterVars} animate={isHover ? "hover" : ""}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="w-6 h-6"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </SliderLeft>
+        <SliderRight
+          key={title + "right"}
+          onClick={IncIndex}
+          variants={enterVars}
+          animate={isHover ? "hover" : ""}
         >
-          <path
-            fillRule="evenodd"
-            d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </SliderRight>
-      <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              fillRule="evenodd"
+              d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </SliderRight>
         <Row
           variants={rowVars}
           initial={{ x: width }}
@@ -307,52 +319,49 @@ function SliderComponent({ data, title, type }: ISliderProps) {
           key={index}
           transition={{ type: "tween", duration: 1 }}
         >
-          {data
-            .slice(1)
-            .slice(offset * index, offset * index + offset)
-            .map((movie) => (
-              <Box
-                layoutId={movie.id + ""}
-                variants={boxVars}
-                initial="normal"
-                whileHover="hover"
-                key={movie.id}
-                transition={{ type: "tween" }}
-                $bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                onClick={() => onBoxClicked(movie.id)}
-              >
-                <Info variants={infoVars}>
-                  <InfoTitle>
-                    {movie.title
-                      ? movie.title.length >= 15
-                        ? movie.title.substring(0, 20) + "..."
-                        : movie.title
-                      : ""}
-                  </InfoTitle>
-                  <InfoData>
-                    <InfoRating>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span>{movie.vote_average.toFixed(1)}</span>
-                      <span>({movie.vote_count})</span>
-                    </InfoRating>
-                    <InfoGenres>
-                      <GenreInfo genreIds={movie.genre_ids || []} genres={genreData.genres} />
-                    </InfoGenres>
-                  </InfoData>
-                </Info>
-              </Box>
-            ))}
+          {data.slice(offset * index, offset * index + offset).map((movie) => (
+            <Box
+              layoutId={movie.id + title}
+              variants={boxVars}
+              initial="normal"
+              whileHover="hover"
+              key={movie.id}
+              transition={{ type: "tween" }}
+              $bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+              onClick={() => onBoxClicked(movie.id)}
+            >
+              <Info variants={infoVars}>
+                <InfoTitle>
+                  {movie.title
+                    ? movie.title.length >= 15
+                      ? movie.title.substring(0, 20) + "..."
+                      : movie.title
+                    : ""}
+                </InfoTitle>
+                <InfoData>
+                  <InfoRating>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span>{movie.vote_average.toFixed(1)}</span>
+                    <span>({movie.vote_count})</span>
+                  </InfoRating>
+                  <InfoGenres>
+                    <GenreInfo genreIds={movie.genre_ids || []} genres={genreData.genres} />
+                  </InfoGenres>
+                </InfoData>
+              </Info>
+            </Box>
+          ))}
         </Row>
       </AnimatePresence>
     </Slider>

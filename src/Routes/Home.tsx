@@ -97,6 +97,8 @@ const TitleInfo = styled.div`
   }
 `;
 
+const Slider = styled.div``;
+
 const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -276,10 +278,13 @@ function Home() {
               </div>
             </TitleInfo>
           </Banner>
-          <SliderComponent data={data?.results ?? []} title="Playing Now" type="movie" />
-          <SliderComponent data={popData?.results ?? []} title="Trending Now" type="movie" />
-          <SliderComponent data={topData?.results ?? []} title="Top Rated" type="movie" />
-          <SliderComponent data={upcoming?.results ?? []} title="Upcoming" type="movie" />
+          <Slider>
+            <SliderComponent data={data?.results ?? []} title="Playing Now" type="movie" />
+            <SliderComponent data={popData?.results ?? []} title="Trending Now" type="movie" />
+            <SliderComponent data={topData?.results ?? []} title="Top Rated" type="movie" />
+            <SliderComponent data={upcoming?.results ?? []} title="Upcoming" type="movie" />
+          </Slider>
+
           <AnimatePresence>
             {movieMatch ? (
               <>
