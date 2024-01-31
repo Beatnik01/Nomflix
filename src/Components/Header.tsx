@@ -13,6 +13,7 @@ const Nav = styled(motion.nav)`
   top: 0;
   padding: 20px 60px;
   color: white;
+  z-index: 99;
 `;
 
 const Col = styled.div`
@@ -45,7 +46,8 @@ const Item = styled.li`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  font-size: 20px;
+  font-size: 15px;
+  font-weight: 400;
   &:hover {
     color: ${(props) => props.theme.white.lighter};
     opacity: 0.6;

@@ -8,7 +8,8 @@ import { IMovie, ITvShow } from "../api";
 
 // Styled //
 const Slider = styled(motion.div)`
-  margin-bottom: 250px;
+  width: 100%;
+  margin-bottom: 40vmin;
   &:last-child {
     margin-bottom: 0;
   }
@@ -55,7 +56,8 @@ const SliderRight = styled(motion.button)`
 
 const Row = styled(motion.div)`
   display: grid;
-  gap: 5px;
+  place-items: center;
+  gap: 1vmin;
   grid-template-columns: repeat(6, 1fr);
   position: absolute;
   width: 100%;
@@ -67,7 +69,8 @@ const Box = styled(motion.div)<{ $bgPhoto: string }>`
   background-image: url(${(props) => props.$bgPhoto});
   background-size: cover;
   background-position: center center;
-  height: 200px;
+  width: 100%;
+  height: 35vmin;
   font-size: 30px;
   border-radius: 5px;
   cursor: pointer;
@@ -331,7 +334,7 @@ function SliderComponent({ data, title, type }: ISliderProps) {
               whileHover="hover"
               key={movie.id}
               transition={{ type: "tween" }}
-              $bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+              $bgPhoto={makeImagePath(movie.poster_path, "w500")}
               onClick={() => onBoxClicked(movie.id)}
             >
               <Info variants={infoVars}>
