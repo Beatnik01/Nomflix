@@ -44,6 +44,12 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 
+export interface IGetMoviesDetailResult {
+  id: number;
+  runtime: string;
+  tagline: string;
+}
+
 export function getPlayingMovies() {
   return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then((response) =>
     response.json()
@@ -62,6 +68,12 @@ export function getTopRatedMovies() {
 
 export function getUpcomingMovies() {
   return fetch(`${BASE_PATH}/movie/upcoming?api_key=${API_KEY}`).then((response) =>
+    response.json()
+  );
+}
+
+export function getMovieDeatail(movieId: number) {
+  return fetch(`${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}`).then((response) =>
     response.json()
   );
 }

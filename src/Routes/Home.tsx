@@ -1,6 +1,8 @@
 import { useQuery } from "react-query";
 import {
+  IGetMoviesDetailResult,
   IGetMoviesResult,
+  getMovieDeatail,
   getPlayingMovies,
   getPopularMovies,
   getTopRatedMovies,
@@ -110,7 +112,7 @@ const Overlay = styled(motion.div)`
 
 const Movie = styled(motion.div)`
   width: 60vw;
-  height: 80vh;
+  height: 70vh;
   position: absolute;
   left: 0;
   right: 0;
@@ -122,19 +124,43 @@ const Movie = styled(motion.div)`
 
 const MovieCover = styled.div`
   width: 100%;
-  height: 80%;
+  height: 65%;
+  position: relative;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top center;
 `;
 
+const MovieInfo = styled.div`
+  display: flex;
+  position: relative;
+  padding: 2rem 4rem;
+`;
+
+const MoivePoster = styled.div`
+  float: left;
+  width: 30%;
+  margin-top: -10rem;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  img {
+    width: 100%;
+  }
+`;
+
+const MovieInfoText = styled.div`
+  float: left;
+  width: 70%;
+`;
+
 const MovieTitle = styled.h2`
   color: ${(props) => props.theme.white.lighter};
+  position: absolute;
+  top: -4rem;
   padding: 10px;
-  font-size: 6rem;
+  font-size: 3rem;
   font-weight: 800;
-  position: relative;
-  top: -140px;
 `;
 
 const MovieOverview = styled.p`
@@ -204,6 +230,12 @@ function Home() {
     ["movies", "upcoming"],
     getUpcomingMovies
   );
+  const detailId = Number(movieMatch?.params.movieId);
+  const { data: detail } = useQuery<IGetMoviesDetailResult>(
+    ["movies", "detail"],
+    () => (Number.isNaN(detailId) ? Promise.resolve(null) : getMovieDeatail(detailId)),
+    { enabled: !Number.isNaN(detailId) }
+  );
   // ===== //
   const onBoxClicked = (movieId: any) => {
     navigate(`/movies/${movieId}`);
@@ -217,6 +249,7 @@ function Home() {
     popData?.results.find((movie) => String(movie.id) === movieMatch?.params.movieId) ||
     topData?.results.find((movie) => String(movie.id) === movieMatch?.params.movieId) ||
     upcoming?.results.find((movie) => String(movie.id) === movieMatch?.params.movieId);
+
   return (
     <Wrapper>
       {isLoading || isPopDataLoading || isTopDataLoading || isUpcomingLoading ? (
@@ -299,12 +332,20 @@ function Home() {
                       <MovieCover
                         style={{
                           backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(
-                            clickedMovie.poster_path
+                            clickedMovie.backdrop_path
                           )}`,
                         }}
                       />
-                      <MovieTitle>{clickedMovie.title?.substring(0, 20)}</MovieTitle>
-                      <MovieOverview>{clickedMovie.overview}</MovieOverview>
+                      <MovieInfo>
+                        <MoivePoster>
+                          <img src={makeImagePath(clickedMovie.poster_path)} alt="Movie Poster" />
+                        </MoivePoster>
+                        <MovieInfoText>
+                          <MovieTitle>{clickedMovie.title?.substring(0, 20)}</MovieTitle>
+                          <MovieOverview>{clickedMovie.overview}</MovieOverview>
+                          <span>{detail?.tagline}</span>
+                        </MovieInfoText>
+                      </MovieInfo>
                     </>
                   )}
                 </Movie>

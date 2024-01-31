@@ -254,6 +254,7 @@ function SliderComponent({ data, title, type }: ISliderProps) {
       }, 1500);
     }
   };
+  // ======================================
   const onBoxClicked = (movieId: any) => {
     navigate(`/movies/${movieId}`);
   };
