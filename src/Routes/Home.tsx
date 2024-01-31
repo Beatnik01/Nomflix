@@ -131,7 +131,7 @@ const MovieCover = styled.div`
 const MovieTitle = styled.h2`
   color: ${(props) => props.theme.white.lighter};
   padding: 10px;
-  font-size: 7rem;
+  font-size: 6rem;
   font-weight: 800;
   position: relative;
   top: -140px;
@@ -303,7 +303,7 @@ function Home() {
                           )}`,
                         }}
                       />
-                      <MovieTitle>{clickedMovie.title?.substring(0, 15)}</MovieTitle>
+                      <MovieTitle>{clickedMovie.title?.substring(0, 20)}</MovieTitle>
                       <MovieOverview>{clickedMovie.overview}</MovieOverview>
                     </>
                   )}

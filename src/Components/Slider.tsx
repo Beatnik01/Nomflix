@@ -231,25 +231,27 @@ function SliderComponent({ data, title, type }: ISliderProps) {
   const handleMouseLeave = () => {
     setIsHover(false);
   };
-  const IncIndex = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const IncIndex = () => {
     if (data && !isDisabled) {
       const totalMovies = data.length;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       setIsDisabled(true);
-      try {
-        setTimeout(() => {
-          setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
-        }, 200);
-      } finally {
+      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+      setTimeout(() => {
         setIsDisabled(false);
-      }
+      }, 1500);
     }
   };
   const DecIndex = () => {
     if (data) {
       const totalMovies = data.length;
       const maxIndex = Math.floor(totalMovies / offset);
+      if (offset * index + offset === 6) return;
+      setIsDisabled(true);
       setIndex((prev) => (prev === maxIndex ? 0 : prev - 1));
+      setTimeout(() => {
+        setIsDisabled(false);
+      }, 1500);
     }
   };
   const onBoxClicked = (movieId: any) => {
@@ -297,6 +299,7 @@ function SliderComponent({ data, title, type }: ISliderProps) {
           onClick={IncIndex}
           variants={enterVars}
           animate={isHover ? "hover" : ""}
+          disabled={isDisabled}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -334,7 +337,7 @@ function SliderComponent({ data, title, type }: ISliderProps) {
                 <InfoTitle>
                   {movie.title
                     ? movie.title.length >= 15
-                      ? movie.title.substring(0, 20) + "..."
+                      ? movie.title.substring(0, 15) + "..."
                       : movie.title
                     : ""}
                 </InfoTitle>
